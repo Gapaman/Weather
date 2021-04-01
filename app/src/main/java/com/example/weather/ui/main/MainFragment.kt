@@ -1,76 +1,92 @@
 package com.example.weather.ui.main
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
-import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.weather.AppState
 import com.example.weather.R
 import com.google.android.material.snackbar.Snackbar
 
+
 class MainFragment : Fragment() {
-    private lateinit var loadingLayout: ProgressBar
-    private lateinit var mainView: ConstraintLayout
-    private lateinit var cityName: TextView
-    private lateinit var cityCoordinates: TextView
-    private lateinit var temperatureValue: TextView
-    private lateinit var feelsLikeValue: TextView
+
+    private var _binding: FragmentMa? = null
+    private val binding get() = _binding!!
+
     private lateinit var viewModel: MainViewModel
+    private val adapter = MainFragmentAdapter(object : OnItemViewClickListener {
+        override fun onItemViewClick(weather: Weather) {
+            val manager = activity?.supportFragmentManager
+            if (manager != null) {
+                val bundle = Bundle()
+                bundle.putParcelable(DetailsFragment.BUNDLE_EXTRA, weather)
+                manager.beginTransaction()
+                    .add(R.id.container, DetailsFragment.newInstance(bundle))
+                    .addToBackStack("")
+                    .commitAllowingStateLoss()
+            }
+        }
+    })
+    private var isDataSetRus: Boolean = true
 
-
-    companion object {
-        fun newInstance() = MainFragment()
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentMainBinding.inflate(inflater, container, false)
+        return binding.getRoot()
     }
 
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.main_fragment, container, false)
-    }
-
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.mainFragmentRecyclerView.adapter = adapter
+        binding.mainFragmentFAB.setOnClickListener { changeWeatherDataSet() }
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.getLiveData().observe(viewLifecycleOwner, Observer { renderData(it) })
-        viewModel.getWeather()
-
+        viewModel.getWeatherFromLocalSourceRus()
     }
 
-    private fun renderData(appState: AppState) = when (appState) {
-        is AppState.Success -> {
-            val weatherData = appState.weatherData
-            loadingLayout.visibility = View.GONE
-            setData(weatherData)
+    private fun changeWeatherDataSet() {
+        if (isDataSetRus) {
+            viewModel.getWeatherFromLocalSourceWorld()
+            binding.mainFragmentFAB.setImageResource(R.drawable.ic_earth)
+        } else {
+            viewModel.getWeatherFromLocalSourceRus()
+            binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
         }
-        is AppState.Loading -> {
-            loadingLayout.visibility = View.VISIBLE
-        }
-        is AppState.Error -> {
-            loadingLayout.visibility = View.GONE
-            Snackbar
-                .make(mainView, "Error", Snackbar.LENGTH_INDEFINITE)
-                .setAction("Reload") { viewModel.getWeather() }
-                .show()
-        }
-    }
-    private fun setData(weatherData: Weather) {
-        cityName.text = weatherData.city.city
-        cityCoordinates.text = String.format(
-            getString(R.string.city_coordinates),
-            weatherData.city.lat.toString(),
-            weatherData.city.lon.toString()
-        )
-        temperatureValue.text = weatherData.temperature.toString()
-        feelsLikeValue.text = weatherData.feelsLike.toString()
+        isDataSetRus = !isDataSetRus
     }
 
+    private fun renderData(appState: AppState) {
+        when (appState) {
+            is AppState.Success -> {
+                binding.mainFragmentLoadingLayout.visibility = View.GONE
+                adapter.setWeather(appState.weatherData)
+            }
+            is AppState.Loading -> {
+                binding.mainFragmentLoadingLayout.visibility = View.VISIBLE
+            }
+            is AppState.Error -> {
+                binding.mainFragmentLoadingLayout.visibility = View.GONE
+                Snackbar
+                    .make(binding.mainFragmentFAB, getString(R.string.error), Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getString(R.string.reload)) { viewModel.getWeatherFromLocalSourceRus() }
+                    .show()
+            }
+        }
+    }
 
+    interface OnItemViewClickListener {
+        fun onItemViewClick(weather: Weather)
+    }
+
+    companion object {
+        fun newInstance() =
+            MainFragment()
+    }
 }
 
