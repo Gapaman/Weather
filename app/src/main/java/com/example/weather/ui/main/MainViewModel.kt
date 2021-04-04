@@ -1,10 +1,8 @@
 package com.example.weather.ui.main
-
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.weather.AppState
 import java.lang.Thread.sleep
-
 
 class MainViewModel(
         private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData(),
@@ -28,8 +26,6 @@ class MainViewModel(
         }.start()
     }
 }
-
-
 
 
 
