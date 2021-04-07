@@ -1,6 +1,6 @@
-package com.example.weather
+package com.example.androidwithkotlin.viewmodel
 
-import com.example.weather.ui.main.Weather
+import com.example.androidwithkotlin.model.Weather
 
 sealed class AppState {
     data class Success(val weatherData: List<Weather>) : AppState()

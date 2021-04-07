@@ -1,14 +1,16 @@
-package com.example.weather.ui.main
+package com.example.androidwithkotlin.viewmodel
+
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.weather.AppState
+import com.example.androidwithkotlin.model.Repository
+import com.example.androidwithkotlin.model.RepositoryImpl
 import java.lang.Thread.sleep
 
 class MainViewModel(
-        private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData(),
-        private val repositoryImpl: Repository = RepositoryImpl()
+    private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData(),
+    private val repositoryImpl: Repository = RepositoryImpl()
 ) :
-        ViewModel() {
+    ViewModel() {
 
     fun getLiveData() = liveDataToObserve
 
@@ -26,7 +28,3 @@ class MainViewModel(
         }.start()
     }
 }
-
-
-
-
