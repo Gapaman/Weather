@@ -10,10 +10,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.androidwithkotlin.R
 import com.example.androidwithkotlin.databinding.FragmentMainBinding
 import com.example.androidwithkotlin.model.Weather
+import com.example.androidwithkotlin.utils.showSnackBar
 import com.example.androidwithkotlin.view.details.DetailsFragment
 import com.example.androidwithkotlin.viewmodel.AppState
 import com.example.androidwithkotlin.viewmodel.MainViewModel
-import com.google.android.material.snackbar.Snackbar
 
 class MainFragment : Fragment() {
 
@@ -87,15 +87,6 @@ class MainFragment : Fragment() {
 
     interface OnItemViewClickListener {
         fun onItemViewClick(weather: Weather)
-    }
-
-    private fun View.showSnackBar(
-        text: String,
-        actionText: String,
-        action: (View) -> Unit,
-        length: Int = Snackbar.LENGTH_INDEFINITE
-    ) {
-        Snackbar.make(this, text, length).setAction(actionText, action).show()
     }
 
     override fun onDestroyView() {

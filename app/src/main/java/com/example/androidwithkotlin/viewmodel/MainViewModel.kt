@@ -2,13 +2,13 @@ package com.example.androidwithkotlin.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.androidwithkotlin.model.Repository
-import com.example.androidwithkotlin.model.RepositoryImpl
+import com.example.androidwithkotlin.repository.MainRepository
+import com.example.androidwithkotlin.repository.MainRepositoryImpl
 import java.lang.Thread.sleep
 
 class MainViewModel(
     private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData(),
-    private val repositoryImpl: Repository = RepositoryImpl()
+    private val mainRepositoryImpl: MainRepository = MainRepositoryImpl()
 ) : ViewModel() {
 
     fun getLiveData() = liveDataToObserve
@@ -23,7 +23,7 @@ class MainViewModel(
         liveDataToObserve.value = AppState.Loading
         Thread {
             sleep(1000)
-            liveDataToObserve.postValue(AppState.Success(if (isRussian) repositoryImpl.getWeatherFromLocalStorageRus() else repositoryImpl.getWeatherFromLocalStorageWorld()))
+            liveDataToObserve.postValue(AppState.Success(if (isRussian) mainRepositoryImpl.getWeatherFromLocalStorageRus() else mainRepositoryImpl.getWeatherFromLocalStorageWorld()))
         }.start()
     }
 }
