@@ -2,9 +2,13 @@ package com.example.androidwithkotlin.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.androidwithkotlin.app.App.Companion.getHistoryDao
+import com.example.androidwithkotlin.app.AppState
+import com.example.androidwithkotlin.model.Weather
 import com.example.androidwithkotlin.model.WeatherDTO
 import com.example.androidwithkotlin.repository.DetailsRepository
 import com.example.androidwithkotlin.repository.DetailsRepositoryImpl
+import com.example.androidwithkotlin.repository.LocalRepositoryImpl
 import com.example.androidwithkotlin.repository.RemoteDataSource
 import com.example.androidwithkotlin.utils.convertDtoToModel
 import retrofit2.Call
@@ -16,15 +20,18 @@ private const val REQUEST_ERROR = "Ошибка запроса на сервер
 private const val CORRUPTED_DATA = "Неполные данные"
 
 class DetailsViewModel(
-    private val detailsLiveData: MutableLiveData<AppState> = MutableLiveData(),
-    private val detailsRepositoryImpl: DetailsRepository = DetailsRepositoryImpl(RemoteDataSource())
+    val detailsLiveData: MutableLiveData<AppState> = MutableLiveData(),
+    private val detailsRepositoryImpl: DetailsRepository = DetailsRepositoryImpl(RemoteDataSource()),
+    private val historyRepositoryImpl: LocalRepositoryImpl = LocalRepositoryImpl(getHistoryDao())
 ) : ViewModel() {
-
-    fun getLiveData() = detailsLiveData
 
     fun getWeatherFromRemoteSource(lat: Double, lon: Double) {
         detailsLiveData.value = AppState.Loading
         detailsRepositoryImpl.getWeatherDetailsFromServer(lat, lon, callBack)
+    }
+
+    fun saveCityToDB(weather: Weather) {
+        historyRepositoryImpl.saveEntity(weather)
     }
 
     private val callBack = object :

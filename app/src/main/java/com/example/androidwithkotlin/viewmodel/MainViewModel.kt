@@ -2,6 +2,7 @@ package com.example.androidwithkotlin.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.androidwithkotlin.app.AppState
 import com.example.androidwithkotlin.repository.MainRepository
 import com.example.androidwithkotlin.repository.MainRepositoryImpl
 import java.lang.Thread.sleep
