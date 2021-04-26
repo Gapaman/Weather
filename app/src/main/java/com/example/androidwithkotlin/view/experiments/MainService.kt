@@ -32,12 +32,10 @@ class MainService(name: String = "MainService") : IntentService(name) {
         super.onDestroy()
     }
 
-    //Выводим уведомление в строке состояния
     private fun createLogMessage(message: String) {
         Log.d(TAG, message)
     }
 
-    //Отправка уведомления о завершении сервиса
     private fun sendBack(result: String) {
         val broadcastIntent = Intent(TEST_BROADCAST_INTENT_FILTER)
         broadcastIntent.putExtra(THREADS_FRAGMENT_BROADCAST_EXTRA, result)
