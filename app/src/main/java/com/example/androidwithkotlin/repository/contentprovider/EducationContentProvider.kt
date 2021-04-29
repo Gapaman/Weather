@@ -10,22 +10,22 @@ import com.example.androidwithkotlin.R
 import com.example.androidwithkotlin.app.App.Companion.getHistoryDao
 import com.example.androidwithkotlin.room.*
 
-private const val URI_ALL = 1 // URI для всех записей
-private const val URI_ID = 2 // URI для конкретной записи
-private const val ENTITY_PATH =
-    "HistoryEntity"
+private const val URI_ALL = 1
+private const val URI_ID = 2
+private const val ENTITY_PATH ="HistoryEntity"
 
 class EducationContentProvider : ContentProvider() {
 
-    private var authorities: String? = null // Адрес URI
-    private lateinit var uriMatcher: UriMatcher // Помогает определить тип адреса URI
+    private var authorities: String? = null
+    private lateinit var uriMatcher: UriMatcher
     // Типы данных
-    private var entityContentType: String? = null // Набор строк
-    private var entityContentItemType: String? = null // Одна строка
+    private var entityContentType: String? = null
+    private var entityContentItemType: String? = null
 
-    private lateinit var contentUri: Uri // Адрес URI Provider’а
+    private lateinit var contentUri: Uri
 
     override fun onCreate(): Boolean {
+
         authorities = context?.resources?.getString(R.string.authorities)
         uriMatcher = UriMatcher(UriMatcher.NO_MATCH)
         uriMatcher.addURI(authorities, ENTITY_PATH, URI_ALL)
@@ -36,14 +36,18 @@ class EducationContentProvider : ContentProvider() {
         return true
     }
 
+
     override fun query(
         uri: Uri, projection: Array<String>?, selection: String?,
         selectionArgs: Array<String>?, sortOrder: String?
     ): Cursor? {
+
         val historyDao: HistoryDao = getHistoryDao()
+
         val cursor = when (uriMatcher.match(uri)) {
             URI_ALL -> historyDao.getHistoryCursor()
             URI_ID -> {
+
                 val id = ContentUris.parseId(uri)
                 historyDao.getHistoryCursor(id)
             }
@@ -61,7 +65,7 @@ class EducationContentProvider : ContentProvider() {
         return null
     }
 
-    // Удаляем запись
+
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
         require(uriMatcher.match(uri) == URI_ID) { "Wrong URI: $uri" }
         val historyDao = getHistoryDao()
@@ -92,7 +96,6 @@ class EducationContentProvider : ContentProvider() {
         context!!.contentResolver.notifyChange(uri, null)
         return 1
     }
-
     private fun map(values: ContentValues?): HistoryEntity {
         return if (values == null) {
             HistoryEntity()

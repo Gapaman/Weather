@@ -27,11 +27,9 @@ class ThreadsFragment : Fragment() {
     private var counterThread = 0
     private var _binding: FragmentThreadsBinding? = null
     private val binding get() = _binding!!
-
-
     private val testReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            //Достаем данные из Интента
+
             intent.getStringExtra(THREADS_FRAGMENT_BROADCAST_EXTRA)?.let {
                 addView(context, it)
             }
